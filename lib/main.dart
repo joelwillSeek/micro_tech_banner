@@ -1,43 +1,46 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 import 'widgets/animated_banner.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
 
-  doWhenWindowReady(() async {
-    const double bannerWidth = 700;
-    const double bannerHeight = 160;
+  const windowOptions = WindowOptions(
+    size: Size(520, 160),
+    backgroundColor: Colors.transparent,
+    skipTaskbar: true,
+    titleBarStyle: TitleBarStyle.hidden,
+    alwaysOnTop: true,
+  );
 
-    // Start hidden at height 0
-    appWindow.size = const Size(bannerWidth, 0);
-    appWindow.alignment = Alignment.bottomRight;
-    appWindow.show();
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.setAlignment(Alignment.bottomRight);
+    await windowManager.setResizable(false);
+    await windowManager.show();
 
-    // Animate height from 0 → bannerHeight over 400ms
-    const int steps = 40;
-    const Duration stepDuration = Duration(milliseconds: 10);
-    for (int i = 1; i <= steps; i++) {
-      await Future.delayed(stepDuration);
-      final double h = (bannerHeight * i / steps).clamp(0, bannerHeight);
-      appWindow.size = Size(bannerWidth, h);
-      appWindow.alignment = Alignment.bottomRight;
-    }
+    // Print actual window size so we can see what the OS reports
+    final size = await windowManager.getSize();
+    debugPrint('>>> actual window size: $size');
 
-    // Hold for 3 seconds
+    // Short delay for the OS to finish positioning
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    // Fade in
+    BannerState.instance.fadeTo(1.0);
+    await Future.delayed(const Duration(milliseconds: 450));
+
+    // Hold 3 seconds
     await Future.delayed(const Duration(seconds: 3));
 
-    // Animate height from bannerHeight → 0 over 400ms
-    for (int i = steps - 1; i >= 0; i--) {
-      await Future.delayed(stepDuration);
-      final double h = (bannerHeight * i / steps).clamp(0, bannerHeight);
-      appWindow.size = Size(bannerWidth, h);
-      appWindow.alignment = Alignment.bottomRight;
-    }
+    // Fade out
+    BannerState.instance.fadeTo(0.0);
+    await Future.delayed(const Duration(milliseconds: 450));
 
-    // Exit
-    appWindow.close();
+    await windowManager.close();
   });
+
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {

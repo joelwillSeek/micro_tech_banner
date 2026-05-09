@@ -1,30 +1,36 @@
 import 'package:flutter/material.dart';
 
-// Fixed dimensions — must match what main.dart uses for appWindow.size
-const double kBannerWidth = 700;
+const double kBannerWidth = 520;
 const double kBannerHeight = 160;
+
+/// Simple global state so main.dart can trigger fade in/out
+class BannerState {
+  BannerState._();
+  static final instance = BannerState._();
+  final opacity = ValueNotifier<double>(0.0);
+  void fadeTo(double value) => opacity.value = value;
+}
 
 class AnimatedBanner extends StatelessWidget {
   const AnimatedBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // ClipRect prevents overflow errors while the window height animates 0→160
-    // Material removes the yellow underline that appears without an inherited theme
     return Material(
-      color: Colors.white,
-      child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.bottomCenter,
-          minWidth: kBannerWidth,
-          maxWidth: kBannerWidth,
-          minHeight: kBannerHeight,
-          maxHeight: kBannerHeight,
-          child: SizedBox(
-            width: kBannerWidth,
-            height: kBannerHeight,
-            child: _BannerCard(),
-          ),
+      color: Colors.transparent,
+      child: SizedBox(
+        width: kBannerWidth,
+        height: kBannerHeight,
+        child: ValueListenableBuilder<double>(
+          valueListenable: BannerState.instance.opacity,
+          builder: (context, opacity, child) {
+            return AnimatedOpacity(
+              opacity: opacity,
+              duration: const Duration(milliseconds: 400),
+              child: child,
+            );
+          },
+          child: const _BannerCard(),
         ),
       ),
     );
@@ -32,35 +38,46 @@ class AnimatedBanner extends StatelessWidget {
 }
 
 class _BannerCard extends StatelessWidget {
+  const _BannerCard();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          // ── Main content ─────────────────────────────────────
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const _Logo(),
-                  const SizedBox(width: 24),
-                  Container(
-                    width: 1,
-                    height: 80,
-                    color: const Color(0xFFE0E0E0),
+    // Footer is fixed at 28px, main area gets the rest
+    const double footerH = 28;
+    const double mainH = kBannerHeight - footerH;
+
+    return SizedBox(
+      width: kBannerWidth,
+      height: kBannerHeight,
+      child: ClipRect(
+        child: ColoredBox(
+          color: Colors.white,
+          child: Column(
+            children: [
+              SizedBox(
+                height: mainH,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const _Logo(),
+                      const SizedBox(width: 24),
+                      Container(
+                        width: 1,
+                        height: 80,
+                        color: const Color(0xFFE0E0E0),
+                      ),
+                      const SizedBox(width: 24),
+                      const Expanded(child: _InfoBlock()),
+                    ],
                   ),
-                  const SizedBox(width: 24),
-                  const Expanded(child: _InfoBlock()),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: footerH, child: _Footer()),
+            ],
           ),
-          // ── Footer ───────────────────────────────────────────
-          const _Footer(),
-        ],
+        ),
       ),
     );
   }
@@ -77,11 +94,11 @@ class _Logo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: 58,
-          height: 58,
+          width: 48,
+          height: 48,
           child: CustomPaint(painter: _ChipPainter()),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 4),
         RichText(
           textAlign: TextAlign.center,
           text: const TextSpan(
@@ -90,7 +107,7 @@ class _Logo extends StatelessWidget {
                 text: 'Micro',
                 style: TextStyle(
                   color: Color(0xFF1565C0),
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -98,7 +115,7 @@ class _Logo extends StatelessWidget {
                 text: 'Tech',
                 style: TextStyle(
                   color: Color(0xFF29B6F6),
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -109,7 +126,7 @@ class _Logo extends StatelessWidget {
           'Computers',
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 9,
+            fontSize: 8,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.6,
           ),
@@ -194,7 +211,6 @@ class _InfoBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
-      // No mainAxisSize.min — let it fill the Expanded height without fighting it
       children: [
         const Text(
           'MicroTech Computers',
@@ -227,7 +243,7 @@ class _InfoBlock extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.black87,
-                  height: 1.35,
+                  height: 1.3,
                 ),
               ),
             ),
@@ -240,7 +256,7 @@ class _InfoBlock extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.black87,
-                  height: 1.35,
+                  height: 1.3,
                 ),
               ),
             ),
@@ -274,8 +290,9 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFFF2F2F2),
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(width: 14, height: 14, color: const Color(0xFF757575)),
           const SizedBox(width: 7),
