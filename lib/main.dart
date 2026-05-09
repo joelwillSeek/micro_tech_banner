@@ -7,7 +7,6 @@ void main() async {
   await windowManager.ensureInitialized();
 
   const windowOptions = WindowOptions(
-    size: Size(520, 160),
     backgroundColor: Colors.transparent,
     skipTaskbar: true,
     titleBarStyle: TitleBarStyle.hidden,
@@ -15,29 +14,30 @@ void main() async {
   );
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.setAlignment(Alignment.bottomRight);
+    // Make window fully invisible at OS level before showing
     await windowManager.setResizable(false);
+    await windowManager.setMaximumSize(const Size(520, 160));
+    await windowManager.setOpacity(0.0);
+
+    await windowManager.setAlignment(Alignment.bottomRight);
     await windowManager.show();
 
-    // Print actual window size so we can see what the OS reports
-    final size = await windowManager.getSize();
-    debugPrint('>>> actual window size: $size');
+    // Wait for OS to resize and reposition
+    await Future.delayed(const Duration(milliseconds: 300));
 
-    // Short delay for the OS to finish positioning
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    // Fade in
+    // Now make window visible at OS level, then fade content in
+    await windowManager.setOpacity(1.0);
     BannerState.instance.fadeTo(1.0);
     await Future.delayed(const Duration(milliseconds: 450));
 
     // Hold 3 seconds
     await Future.delayed(const Duration(seconds: 3));
 
-    // Fade out
-    BannerState.instance.fadeTo(0.0);
-    await Future.delayed(const Duration(milliseconds: 450));
+    // Fade content out
+    // BannerState.instance.fadeTo(0.0);
+    // await Future.delayed(const Duration(milliseconds: 450));
 
-    await windowManager.close();
+    // await windowManager.close();
   });
 
   runApp(const MainApp());

@@ -294,7 +294,7 @@ class _Footer extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(width: 14, height: 14, color: const Color(0xFF757575)),
+          Image.asset("assets/icon.png", width: 20, height: 20),
           const SizedBox(width: 7),
           const Text(
             'POWERED BY HONOR SYSTEMS',
