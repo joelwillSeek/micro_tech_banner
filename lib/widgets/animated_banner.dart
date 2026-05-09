@@ -1,88 +1,66 @@
 import 'package:flutter/material.dart';
 
-class AnimatedBanner extends StatefulWidget {
+// Fixed dimensions — must match what main.dart uses for appWindow.size
+const double kBannerWidth = 700;
+const double kBannerHeight = 160;
+
+class AnimatedBanner extends StatelessWidget {
   const AnimatedBanner({super.key});
 
   @override
-  State<AnimatedBanner> createState() => _AnimatedBannerState();
+  Widget build(BuildContext context) {
+    // ClipRect prevents overflow errors while the window height animates 0→160
+    // Material removes the yellow underline that appears without an inherited theme
+    return Material(
+      color: Colors.white,
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.bottomCenter,
+          minWidth: kBannerWidth,
+          maxWidth: kBannerWidth,
+          minHeight: kBannerHeight,
+          maxHeight: kBannerHeight,
+          child: SizedBox(
+            width: kBannerWidth,
+            height: kBannerHeight,
+            child: _BannerCard(),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _AnimatedBannerState extends State<AnimatedBanner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-
-    // Reveal
-    _controller.forward();
-
-    // Hold for 3s then slide back down
-    Future.delayed(const Duration(milliseconds: 3500), () {
-      if (mounted) _controller.reverse();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class _BannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _slideAnimation,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── Main content ──────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: [
+          // ── Main content ─────────────────────────────────────
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Logo block
-                  _Logo(),
-                  const SizedBox(width: 20),
-                  // Divider
-                  Container(width: 1, height: 80, color: Colors.grey.shade200),
-                  const SizedBox(width: 20),
-                  // Info block
-                  Expanded(child: _InfoBlock()),
+                  const _Logo(),
+                  const SizedBox(width: 24),
+                  Container(
+                    width: 1,
+                    height: 80,
+                    color: const Color(0xFFE0E0E0),
+                  ),
+                  const SizedBox(width: 24),
+                  const Expanded(child: _InfoBlock()),
                 ],
               ),
             ),
-
-            // ── Footer ────────────────────────────────────────────
-            _Footer(),
-          ],
-        ),
+          ),
+          // ── Footer ───────────────────────────────────────────
+          const _Footer(),
+        ],
       ),
     );
   }
@@ -90,185 +68,188 @@ class _AnimatedBannerState extends State<AnimatedBanner>
 
 // ── Logo ──────────────────────────────────────────────────────────────────────
 class _Logo extends StatelessWidget {
+  const _Logo();
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Chip icon composed from Flutter widgets
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF1565C0), width: 2.5),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Inner chip body
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E88E5).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-              // Chip pins – top & bottom
-              ..._chipPins(),
-              // "Micro" text inside chip
-              const Positioned(
-                child: Text(
-                  'Micro',
-                  style: TextStyle(
-                    color: Color(0xFF1565C0),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        SizedBox(
+          width: 58,
+          height: 58,
+          child: CustomPaint(painter: _ChipPainter()),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 5),
         RichText(
+          textAlign: TextAlign.center,
           text: const TextSpan(
             children: [
               TextSpan(
                 text: 'Micro',
                 style: TextStyle(
                   color: Color(0xFF1565C0),
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               TextSpan(
-                text: 'Tech\n',
+                text: 'Tech',
                 style: TextStyle(
                   color: Color(0xFF29B6F6),
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextSpan(
-                text: 'Computers',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.3,
                 ),
               ),
             ],
           ),
-          textAlign: TextAlign.center,
+        ),
+        const Text(
+          'Computers',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 9,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.6,
+          ),
         ),
       ],
     );
   }
+}
 
-  static List<Widget> _chipPins() {
-    // Simple decorative pin lines on top and bottom
-    return [
-      Positioned(
-        top: 4,
-        left: 14,
-        right: 14,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(
-            3,
-            (_) =>
-                Container(width: 6, height: 3, color: const Color(0xFF1565C0)),
-          ),
-        ),
-      ),
-      Positioned(
-        bottom: 4,
-        left: 14,
-        right: 14,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(
-            3,
-            (_) =>
-                Container(width: 6, height: 3, color: const Color(0xFF1565C0)),
-          ),
-        ),
-      ),
-    ];
+class _ChipPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const blue = Color(0xFF1565C0);
+    const lightBlue = Color(0xFF29B6F6);
+
+    final borderPaint = Paint()
+      ..color = blue
+      ..strokeWidth = 1.8
+      ..style = PaintingStyle.stroke;
+
+    final fillPaint = Paint()
+      ..color = const Color(0xFFE3F2FD)
+      ..style = PaintingStyle.fill;
+
+    final pinPaint = Paint()
+      ..color = blue
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.butt
+      ..style = PaintingStyle.stroke;
+
+    final circuitPaint = Paint()
+      ..color = lightBlue.withValues(alpha: 0.7)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    final double pad = size.width * 0.20;
+    final rect = Rect.fromLTWH(
+      pad,
+      pad,
+      size.width - pad * 2,
+      size.height - pad * 2,
+    );
+    final rRect = RRect.fromRectAndRadius(rect, const Radius.circular(4));
+
+    canvas.drawRRect(rRect, fillPaint);
+    canvas.drawRRect(rRect, borderPaint);
+
+    for (final r in [0.33, 0.5, 0.67]) {
+      final x = size.width * r;
+      final y = size.height * r;
+      canvas.drawLine(Offset(x, 0), Offset(x, pad), pinPaint);
+      canvas.drawLine(
+        Offset(x, size.height - pad),
+        Offset(x, size.height),
+        pinPaint,
+      );
+      canvas.drawLine(Offset(0, y), Offset(pad, y), pinPaint);
+      canvas.drawLine(
+        Offset(size.width - pad, y),
+        Offset(size.width, y),
+        pinPaint,
+      );
+    }
+
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    canvas.drawCircle(Offset(cx, cy), size.width * 0.10, circuitPaint);
+    canvas.drawLine(Offset(cx - 6, cy), Offset(cx + 6, cy), circuitPaint);
+    canvas.drawLine(Offset(cx, cy - 6), Offset(cx, cy + 6), circuitPaint);
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ── Info block ────────────────────────────────────────────────────────────────
 class _InfoBlock extends StatelessWidget {
+  const _InfoBlock();
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      // No mainAxisSize.min — let it fill the Expanded height without fighting it
       children: [
-        // Company name
         const Text(
           'MicroTech Computers',
           style: TextStyle(
             color: Color(0xFF1565C0),
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.2,
           ),
         ),
-        const SizedBox(height: 3),
-        // Subtitle
+        const SizedBox(height: 2),
         const Text(
           'ENTERPRISE INFRASTRUCTURE V4.0',
           style: TextStyle(
             color: Color(0xFF1E88E5),
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: FontWeight.w600,
-            letterSpacing: 1.2,
+            letterSpacing: 1.4,
           ),
         ),
-        const SizedBox(height: 10),
-        // Address row
+        const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.location_on, color: Color(0xFF1E88E5), size: 15),
-            const SizedBox(width: 4),
-            const Expanded(
+          children: const [
+            Icon(Icons.location_on, color: Color(0xFF1E88E5), size: 13),
+            SizedBox(width: 3),
+            Flexible(
               child: Text(
                 'መገናኛ መተባበር\nህንፃ 2ኛ ፎቅ',
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.black87,
-                  height: 1.4,
+                  height: 1.35,
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            const Text(
-              '•  ',
-              style: TextStyle(color: Colors.black54, fontSize: 11),
-            ),
-            const Expanded(
+            SizedBox(width: 12),
+            Text('•', style: TextStyle(color: Colors.black38, fontSize: 11)),
+            SizedBox(width: 8),
+            Flexible(
               child: Text(
                 'Megenagna Metebaber\nBuilding, 2nd Floor',
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.black87,
-                  height: 1.4,
+                  height: 1.35,
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
-        // Phone row
         Row(
           children: const [
-            Icon(Icons.phone, color: Color(0xFF1E88E5), size: 14),
+            Icon(Icons.phone, color: Color(0xFF1E88E5), size: 13),
             SizedBox(width: 4),
             Text(
               '0921778272 / 0944032128',
@@ -287,28 +268,23 @@ class _InfoBlock extends StatelessWidget {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 class _Footer extends StatelessWidget {
+  const _Footer();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(12),
-          bottomRight: Radius.circular(12),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+      color: const Color(0xFFF2F2F2),
+      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 6),
       child: Row(
         children: [
-          // Honor Systems logo placeholder
-          Container(width: 16, height: 16, color: Colors.grey.shade500),
-          const SizedBox(width: 6),
+          Container(width: 14, height: 14, color: const Color(0xFF757575)),
+          const SizedBox(width: 7),
           const Text(
             'POWERED BY HONOR SYSTEMS',
             style: TextStyle(
-              fontSize: 9,
-              color: Colors.black54,
-              letterSpacing: 1.0,
+              fontSize: 8,
+              color: Color(0xFF757575),
+              letterSpacing: 1.2,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -316,9 +292,9 @@ class _Footer extends StatelessWidget {
           const Text(
             'honourhq.app@gmail.com   |   0944032128',
             style: TextStyle(
-              fontSize: 9,
-              color: Colors.black45,
-              letterSpacing: 0.5,
+              fontSize: 8,
+              color: Color(0xFF9E9E9E),
+              letterSpacing: 0.4,
             ),
           ),
         ],
