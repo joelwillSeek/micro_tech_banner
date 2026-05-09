@@ -16,7 +16,7 @@ void main() async {
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     // Make window fully invisible at OS level before showing
     await windowManager.setResizable(false);
-    await windowManager.setMaximumSize(const Size(520, 160));
+    await windowManager.setMaximumSize(const Size(510, 190));
     await windowManager.setOpacity(0.0);
 
     await windowManager.setAlignment(Alignment.bottomRight);

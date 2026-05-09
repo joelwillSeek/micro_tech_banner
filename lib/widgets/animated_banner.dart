@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const double kBannerWidth = 520;
-const double kBannerHeight = 160;
+const double kBannerWidth = 620;
+const double kBannerHeight = 190;
 
 /// Simple global state so main.dart can trigger fade in/out
 class BannerState {
@@ -43,7 +43,7 @@ class _BannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Footer is fixed at 28px, main area gets the rest
-    const double footerH = 28;
+    const double footerH = 32;
     const double mainH = kBannerHeight - footerH;
 
     return SizedBox(
@@ -94,11 +94,11 @@ class _Logo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: 48,
-          height: 48,
+          width: 62,
+          height: 62,
           child: CustomPaint(painter: _ChipPainter()),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 5),
         RichText(
           textAlign: TextAlign.center,
           text: const TextSpan(
@@ -107,7 +107,7 @@ class _Logo extends StatelessWidget {
                 text: 'Micro',
                 style: TextStyle(
                   color: Color(0xFF1565C0),
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -115,7 +115,7 @@ class _Logo extends StatelessWidget {
                 text: 'Tech',
                 style: TextStyle(
                   color: Color(0xFF29B6F6),
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -126,7 +126,7 @@ class _Logo extends StatelessWidget {
           'Computers',
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 8,
+            fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.6,
           ),
@@ -216,22 +216,22 @@ class _InfoBlock extends StatelessWidget {
           'MicroTech Computers',
           style: TextStyle(
             color: Color(0xFF1565C0),
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.2,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 3),
         const Text(
           'ENTERPRISE INFRASTRUCTURE V4.0',
           style: TextStyle(
             color: Color(0xFF1E88E5),
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: FontWeight.w600,
             letterSpacing: 1.4,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -268,7 +268,7 @@ class _InfoBlock extends StatelessWidget {
             Icon(Icons.phone, color: Color(0xFF1E88E5), size: 13),
             SizedBox(width: 4),
             Text(
-              '0921778272 / 0944032128',
+              '0921778272 ',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.black87,
@@ -299,7 +299,7 @@ class _Footer extends StatelessWidget {
           const Text(
             'POWERED BY HONOR SYSTEMS',
             style: TextStyle(
-              fontSize: 8,
+              fontSize: 9,
               color: Color(0xFF757575),
               letterSpacing: 1.2,
               fontWeight: FontWeight.w600,
@@ -309,7 +309,7 @@ class _Footer extends StatelessWidget {
           const Text(
             'honourhq.app@gmail.com   |   0944032128',
             style: TextStyle(
-              fontSize: 8,
+              fontSize: 9,
               color: Color(0xFF9E9E9E),
               letterSpacing: 0.4,
             ),
