@@ -96,7 +96,7 @@ class _Logo extends StatelessWidget {
         SizedBox(
           width: 62,
           height: 62,
-          child: Image.asset('assets/icon.png', fit: BoxFit.contain),
+          child: Image.asset('assets/logo.jpg', fit: BoxFit.contain),
         ),
         const SizedBox(height: 5),
         RichText(
