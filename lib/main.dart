@@ -1,47 +1,37 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'widgets/animated_banner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-
-  const windowOptions = WindowOptions(
-    backgroundColor: Colors.transparent,
-    skipTaskbar: true,
-    size: Size(510, 190),
-    titleBarStyle: TitleBarStyle.hidden,
-    alwaysOnTop: true,
-  );
-
-  await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    // Make window fully invisible at OS level before showing
-    await windowManager.setResizable(false);
-    await windowManager.setMaximumSize(const Size(510, 190));
-    await windowManager.setOpacity(0.0);
-
-    await windowManager.setAlignment(Alignment.bottomRight);
-    await windowManager.show();
-
-    // Wait for OS to resize and reposition
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    // Now make window visible at OS level, then fade content in
-    await windowManager.setOpacity(1.0);
-    BannerState.instance.fadeTo(1.0);
-    await Future.delayed(const Duration(milliseconds: 450));
-
-    // Hold 3 seconds
-    await Future.delayed(const Duration(seconds: 3));
-
-    // Fade content out
-    BannerState.instance.fadeTo(0.0);
-    await Future.delayed(const Duration(milliseconds: 450));
-
-    await windowManager.close();
-  });
-
+  
+  await Window.initialize();
+  await Window.setEffect(effect: WindowEffect.transparent);
+  
   runApp(const MainApp());
+
+  doWhenWindowReady(() {
+    const initialSize = Size(510, 190);
+    appWindow.minSize = initialSize;
+    appWindow.maxSize = initialSize;
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.bottomRight;
+    appWindow.show();
+    
+    // Fade in animation
+    BannerState.instance.fadeTo(1.0);
+    
+    // Hold 3 seconds then fade out
+    Future.delayed(const Duration(seconds: 3), () {
+      BannerState.instance.fadeTo(0.0);
+      
+      // Close the window after fade out animation (400ms) completes
+      Future.delayed(const Duration(milliseconds: 500), () {
+        appWindow.close();
+      });
+    });
+  });
 }
 
 class MainApp extends StatelessWidget {

@@ -5,10 +5,10 @@
 import FlutterMacOS
 import Foundation
 
-import screen_retriever_macos
-import window_manager
+import bitsdojo_window_macos
+import macos_window_utils
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  ScreenRetrieverMacosPlugin.register(with: registry.registrar(forPlugin: "ScreenRetrieverMacosPlugin"))
-  WindowManagerPlugin.register(with: registry.registrar(forPlugin: "WindowManagerPlugin"))
+  BitsdojoWindowPlugin.register(with: registry.registrar(forPlugin: "BitsdojoWindowPlugin"))
+  MacOSWindowUtilsPlugin.register(with: registry.registrar(forPlugin: "MacOSWindowUtilsPlugin"))
 }
