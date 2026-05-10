@@ -96,7 +96,7 @@ class _Logo extends StatelessWidget {
         SizedBox(
           width: 62,
           height: 62,
-          child: CustomPaint(painter: _ChipPainter()),
+          child: Image.asset('assets/icon.png', fit: BoxFit.contain),
         ),
         const SizedBox(height: 5),
         RichText(
@@ -134,72 +134,6 @@ class _Logo extends StatelessWidget {
       ],
     );
   }
-}
-
-class _ChipPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    const blue = Color(0xFF1565C0);
-    const lightBlue = Color(0xFF29B6F6);
-
-    final borderPaint = Paint()
-      ..color = blue
-      ..strokeWidth = 1.8
-      ..style = PaintingStyle.stroke;
-
-    final fillPaint = Paint()
-      ..color = const Color(0xFFE3F2FD)
-      ..style = PaintingStyle.fill;
-
-    final pinPaint = Paint()
-      ..color = blue
-      ..strokeWidth = 1.8
-      ..strokeCap = StrokeCap.butt
-      ..style = PaintingStyle.stroke;
-
-    final circuitPaint = Paint()
-      ..color = lightBlue.withValues(alpha: 0.7)
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    final double pad = size.width * 0.20;
-    final rect = Rect.fromLTWH(
-      pad,
-      pad,
-      size.width - pad * 2,
-      size.height - pad * 2,
-    );
-    final rRect = RRect.fromRectAndRadius(rect, const Radius.circular(4));
-
-    canvas.drawRRect(rRect, fillPaint);
-    canvas.drawRRect(rRect, borderPaint);
-
-    for (final r in [0.33, 0.5, 0.67]) {
-      final x = size.width * r;
-      final y = size.height * r;
-      canvas.drawLine(Offset(x, 0), Offset(x, pad), pinPaint);
-      canvas.drawLine(
-        Offset(x, size.height - pad),
-        Offset(x, size.height),
-        pinPaint,
-      );
-      canvas.drawLine(Offset(0, y), Offset(pad, y), pinPaint);
-      canvas.drawLine(
-        Offset(size.width - pad, y),
-        Offset(size.width, y),
-        pinPaint,
-      );
-    }
-
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    canvas.drawCircle(Offset(cx, cy), size.width * 0.10, circuitPaint);
-    canvas.drawLine(Offset(cx - 6, cy), Offset(cx + 6, cy), circuitPaint);
-    canvas.drawLine(Offset(cx, cy - 6), Offset(cx, cy + 6), circuitPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ── Info block ────────────────────────────────────────────────────────────────
