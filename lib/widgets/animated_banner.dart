@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const double kBannerWidth = 620;
+const double kBannerWidth = 510;
 const double kBannerHeight = 190;
 
 /// Simple global state so main.dart can trigger fade in/out

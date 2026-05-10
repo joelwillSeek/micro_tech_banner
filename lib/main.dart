@@ -9,6 +9,7 @@ void main() async {
   const windowOptions = WindowOptions(
     backgroundColor: Colors.transparent,
     skipTaskbar: true,
+    size: Size(510, 190),
     titleBarStyle: TitleBarStyle.hidden,
     alwaysOnTop: true,
   );
@@ -34,10 +35,10 @@ void main() async {
     await Future.delayed(const Duration(seconds: 3));
 
     // Fade content out
-    // BannerState.instance.fadeTo(0.0);
-    // await Future.delayed(const Duration(milliseconds: 450));
+    BannerState.instance.fadeTo(0.0);
+    await Future.delayed(const Duration(milliseconds: 450));
 
-    // await windowManager.close();
+    await windowManager.close();
   });
 
   runApp(const MainApp());
