@@ -22,7 +22,7 @@ void main() async {
     BannerState.instance.fadeTo(1.0);
 
     // Hold 3 seconds then fade out
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 10), () {
       BannerState.instance.fadeTo(0.0);
 
       // Close the window after fade out animation (400ms) completes
